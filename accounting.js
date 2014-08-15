@@ -216,9 +216,16 @@
 	var toFixed = lib.toFixed = function(value, precision) {
 		precision = checkPrecision(precision, lib.settings.number.precision);
 		var power = Math.pow(10, precision);
+		var epsilon = typeof arguments[2] != 'undefined' ? arguments[2].substr(0,1).toLowerCase() : 'u';
 
-		// Multiply up by precision, round accurately, then divide and use native toFixed():
-		return (Math.round(lib.unformat(value) * power) / power).toFixed(precision);
+		// Determine rounding direction, multiply up by precision, round accurately, then divide and use native toFixed():
+		if (epsilon == "u") {
+			return (Math.round(lib.unformat(value + 0.00001) * power) / power).toFixed(precision);
+		} else if (epsilon == "d") {
+			return (Math.round(lib.unformat(value - 0.00001) * power) / power).toFixed(precision);
+		} else {
+			return (Math.round(lib.unformat(value) * power) / power).toFixed(precision);
+		}
 	};
 
 
